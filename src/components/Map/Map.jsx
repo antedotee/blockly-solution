@@ -1,22 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Polyline,
-  // useMap,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import Navbar from "../Navbar/Navbar";
 import "./Map.css";
 
-const carIconBase = new L.Icon({
-  iconUrl:
-    "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png",
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
-});
+const carIcon = (rotation) =>
+  new L.DivIcon({
+    className: "car-icon",
+    html: `<div style="transform: rotate(${rotation}deg);">
+             <img src="https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png" 
+                  style="width: 32px; height: 32px;" />
+           </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
 
 const generateRouteCoordinates = (timeFrame) => {
   const baseCoordinates = [
@@ -42,6 +40,13 @@ const generateRouteCoordinates = (timeFrame) => {
   }
 };
 
+const calculateRotation = ([lat1, lng1], [lat2, lng2]) => {
+  const deltaY = lat2 - lat1;
+  const deltaX = lng2 - lng1;
+  const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
+  return angle; // Rotation in degrees
+};
+
 const Map = () => {
   const [currentPosition, setCurrentPosition] = useState([37.7749, -122.4194]);
   const [routeIndex, setRouteIndex] = useState(0);
@@ -51,6 +56,7 @@ const Map = () => {
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("");
   const [progress, setProgress] = useState(0);
+  const [carRotation, setCarRotation] = useState(0);
 
   const mapRef = useRef(null);
 
@@ -82,6 +88,7 @@ const Map = () => {
     setIsMoving(false);
     setShowControls(false);
     setSelectedTimeFrame("");
+    setCarRotation(0);
   };
 
   const handleSpeedChange = (event) =>
@@ -91,9 +98,17 @@ const Map = () => {
     if (isMoving && routeCoordinates.length > 0) {
       const intervalId = setInterval(() => {
         if (routeIndex < routeCoordinates.length - 1) {
-          setRouteIndex((prevIndex) => prevIndex + 1);
-          setCurrentPosition(routeCoordinates[routeIndex + 1]);
-          setProgress(((routeIndex + 1) / (routeCoordinates.length - 1)) * 100);
+          const nextIndex = routeIndex + 1;
+          const nextPosition = routeCoordinates[nextIndex];
+          const rotation = calculateRotation(
+            routeCoordinates[routeIndex],
+            nextPosition
+          );
+
+          setRouteIndex(nextIndex);
+          setCurrentPosition(nextPosition);
+          setCarRotation(rotation);
+          setProgress((nextIndex / (routeCoordinates.length - 1)) * 100);
         } else {
           clearInterval(intervalId);
           setIsMoving(false);
@@ -122,7 +137,7 @@ const Map = () => {
         {routeCoordinates.length > 0 && (
           <>
             <Polyline positions={routeCoordinates} color="green" />
-            <Marker position={currentPosition} icon={carIconBase} />
+            <Marker position={currentPosition} icon={carIcon(carRotation)} />
           </>
         )}
       </MapContainer>
