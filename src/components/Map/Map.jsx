@@ -87,6 +87,7 @@ const Map = () => {
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("");
   const [progress, setProgress] = useState(0);
   const [carRotation, setCarRotation] = useState(0);
+  const [isRotating, setIsRotating] = useState(false);
 
   const mapRef = useRef(null);
 
@@ -120,6 +121,7 @@ const Map = () => {
     setShowControls(false);
     setSelectedTimeFrame("");
     setCarRotation(0);
+    setIsRotating(false);
   };
 
   const handleSpeedChange = (event) =>
@@ -136,10 +138,15 @@ const Map = () => {
             nextPosition
           );
 
-          setRouteIndex(nextIndex);
-          setCurrentPosition(nextPosition);
-          setCarRotation(rotation);
-          setProgress((nextIndex / (routeCoordinates.length - 1)) * 100);
+          if (!isRotating) {
+            setIsRotating(true);
+            setCarRotation(rotation);
+          } else {
+            setRouteIndex(nextIndex);
+            setCurrentPosition(nextPosition);
+            setProgress((nextIndex / (routeCoordinates.length - 1)) * 100);
+            setIsRotating(false);
+          }
         } else {
           clearInterval(intervalId);
           setIsMoving(false);
@@ -148,7 +155,7 @@ const Map = () => {
 
       return () => clearInterval(intervalId);
     }
-  }, [isMoving, routeIndex, routeCoordinates, simulationSpeed]);
+  }, [isMoving, routeIndex, routeCoordinates, simulationSpeed, isRotating]);
 
   return (
     <div>
