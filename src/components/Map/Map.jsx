@@ -52,7 +52,6 @@ const Map = () => {
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("");
   const [progress, setProgress] = useState(0);
 
-  // Ref to store the map instance
   const mapRef = useRef(null);
 
   const handleTimeFrameSelect = (event) => {
@@ -63,7 +62,6 @@ const Map = () => {
     setCurrentPosition(newRouteCoordinates[0]);
     setRouteIndex(0);
 
-    // Safely use setView if map exists
     if (mapRef.current) {
       mapRef.current.setView(newRouteCoordinates[0], mapRef.current.getZoom());
     }
@@ -82,8 +80,8 @@ const Map = () => {
     setCurrentPosition(routeCoordinates[0]);
     setProgress(0);
     setIsMoving(false);
-    setShowControls(false); // Resets to initial state
-    setSelectedTimeFrame(""); // Resets dropdown value
+    setShowControls(false);
+    setSelectedTimeFrame("");
   };
 
   const handleSpeedChange = (event) =>
@@ -114,7 +112,7 @@ const Map = () => {
         zoom={14}
         className="map-container"
         whenCreated={(mapInstance) => {
-          mapRef.current = mapInstance; // Store map instance
+          mapRef.current = mapInstance;
         }}
       >
         <TileLayer
