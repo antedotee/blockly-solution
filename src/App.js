@@ -4,7 +4,7 @@ import Map from "./components/Map/Map";
 function App() {
   return (
     <div className="App">
-      <h1>Vehicle Movement</h1>
+      <h1>Vehicle Movement Tracker</h1>
       <Map />
     </div>
   );
