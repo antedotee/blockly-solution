@@ -16,6 +16,17 @@ const carIcon = (rotation) =>
     iconAnchor: [16, 16],
   });
 
+const arrowIcon = (rotation) =>
+  new L.DivIcon({
+    className: "arrow-icon",
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
+                style="transform: rotate(${rotation}deg); width: 16px; height: 16px;">
+                <path d="M12 2L19 12H5L12 2Z" />
+              </svg>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+
 const generateRouteCoordinates = (timeFrame) => {
   const baseCoordinates = [
     [37.7749, -122.4194],
@@ -41,10 +52,28 @@ const generateRouteCoordinates = (timeFrame) => {
 };
 
 const calculateRotation = ([lat1, lng1], [lat2, lng2]) => {
-  const deltaY = lat2 - lat1;
-  const deltaX = lng2 - lng1;
-  const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
-  return angle; // Rotation in degrees
+  const deltaLng = lng2 - lng1;
+  const y = Math.sin(deltaLng) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
+  const angle = (Math.atan2(y, x) * 180) / Math.PI;
+  return (angle + 360) % 360;
+};
+
+const calculateArrowPositions = (coordinates) => {
+  const arrows = [];
+  for (let i = 0; i < coordinates.length - 1; i++) {
+    const [lat1, lng1] = coordinates[i];
+    const [lat2, lng2] = coordinates[i + 1];
+
+    const midpoint = [(lat1 + lat2) / 2, (lng1 + lng2) / 2];
+
+    const rotation = calculateRotation([lat1, lng1], [lat2, lng2]);
+
+    arrows.push({ position: midpoint, rotation });
+  }
+  return arrows;
 };
 
 const Map = () => {
@@ -54,6 +83,7 @@ const Map = () => {
   const [showControls, setShowControls] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [arrowData, setArrowData] = useState([]);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState("");
   const [progress, setProgress] = useState(0);
   const [carRotation, setCarRotation] = useState(0);
@@ -65,6 +95,7 @@ const Map = () => {
     setSelectedTimeFrame(selectedFrame);
     const newRouteCoordinates = generateRouteCoordinates(selectedFrame);
     setRouteCoordinates(newRouteCoordinates);
+    setArrowData(calculateArrowPositions(newRouteCoordinates));
     setCurrentPosition(newRouteCoordinates[0]);
     setRouteIndex(0);
 
@@ -138,6 +169,13 @@ const Map = () => {
           <>
             <Polyline positions={routeCoordinates} color="green" />
             <Marker position={currentPosition} icon={carIcon(carRotation)} />
+            {arrowData.map((arrow, index) => (
+              <Marker
+                key={index}
+                position={arrow.position}
+                icon={arrowIcon(arrow.rotation)}
+              />
+            ))}
           </>
         )}
       </MapContainer>
