@@ -123,7 +123,7 @@ const Map = () => {
         />
         {routeCoordinates.length > 0 && (
           <>
-            <Polyline positions={routeCoordinates} color="red" />
+            <Polyline positions={routeCoordinates} color="green" />
             <Marker position={currentPosition} icon={carIconBase} />
           </>
         )}
