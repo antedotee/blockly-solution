@@ -1,0 +1,25 @@
+.map-container {
+  height: 500px;
+  width: 100%;
+}
+
+.controls-container {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.start-simulation-button {
+  padding: 8px 16px;
+  font-size: 16px;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.start-simulation-button:hover {
+  background-color: #2563eb;
+}
