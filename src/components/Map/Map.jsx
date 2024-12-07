@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import Navbar from "../Navbar/Navbar";
+// import Navbar from "../Navbar/Navbar";
 import "./Map.css";
 
 const carIcon = (rotation) =>
@@ -159,7 +159,7 @@ const Map = () => {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
       <MapContainer
         center={routeCoordinates[0] || [37.7749, -122.4194]}
         zoom={14}
