@@ -10,7 +10,7 @@ const carIcon = (rotation) =>
     className: "car-icon",
     html: `<div style="transform: rotate(${rotation}deg);">
              <img src="https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png" 
-                  style="width: 32px; height: 32px;" />
+                  style="width: 32px; height: 32px; transform: rotate(-90deg);" />
            </div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
